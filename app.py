@@ -3,44 +3,38 @@ import numpy as np
 from flask import Flask, render_template, Response, jsonify, request
 from ultralytics import YOLO
 import easyocr
-import threading
+import os
 
 app = Flask(__name__)
 
-# --- AI Models Initialization ---
-model_plate = YOLO('best.pt')
+# Load model and OCR
+model_plate = YOLO('best.pt') 
 ocr_reader = easyocr.Reader(['en'], gpu=False)
 
-# Global variables
 video_source = None
 current_frame = None
-show_boxes = False  # The bounding box is hidden by default
+show_boxes = False # Bounding box is OFF by default
 
 def generate_frames():
     global current_frame, video_source, show_boxes
     while video_source is not None:
         success, frame = video_source.read()
-        if not success:
-            break
+        if not success: break
         
         current_frame = frame.copy()
         display_frame = frame.copy()
 
-        # Bounding box logic: ONLY runs if the user clicked the button
+        # Green bounding box logic: ONLY runs if toggle is enabled
         if show_boxes:
             results = model_plate(display_frame, verbose=False, conf=0.3)[0]
             for box in results.boxes:
-                cls_name = model_plate.names[int(box.cls)].lower()
-                if "car" in cls_name: continue
-                
+                if "car" in model_plate.names[int(box.cls)].lower(): continue
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
-                # Green bounding box (BGR: 0, 255, 0)
                 cv2.rectangle(display_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
         ret, buffer = cv2.imencode('.jpg', display_frame)
-        frame_bytes = buffer.tobytes()
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
 
 @app.route('/')
 def index():
@@ -60,43 +54,28 @@ def toggle_detection():
 @app.route('/upload_video', methods=['POST'])
 def upload_video():
     global video_source
-    if 'file' not in request.files:
-        return jsonify({"error": "No file uploaded"}), 400
-    
+    if 'file' not in request.files: return jsonify({"error": "No file"}), 400
     file = request.files['file']
     file.save("temp_video.mp4")
-    
-    if video_source:
-        video_source.release()
-    
+    if video_source: video_source.release()
     video_source = cv2.VideoCapture("temp_video.mp4")
     return jsonify({"status": "success"})
 
 @app.route('/read_plate', methods=['GET'])
 def read_plate():
     global current_frame
-    if current_frame is None:
-        return jsonify({"plate": "No video active"})
-
+    if current_frame is None: return jsonify({"plate": "No media"})
     results = model_plate(current_frame, verbose=False, conf=0.3)[0]
     plates_found = []
-
     for box in results.boxes:
-        cls_name = model_plate.names[int(box.cls)].lower()
-        if "car" in cls_name: continue
-        
+        if "car" in model_plate.names[int(box.cls)].lower(): continue
         x1, y1, x2, y2 = map(int, box.xyxy[0])
         plate_roi = current_frame[y1:y2, x1:x2]
-        
         if plate_roi.size > 0:
-            gray = cv2.cvtColor(plate_roi, cv2.COLOR_BGR2GRAY)
-            ocr_output = ocr_reader.readtext(gray)
+            ocr_output = ocr_reader.readtext(cv2.cvtColor(plate_roi, cv2.COLOR_BGR2GRAY))
             text = " ".join([res[1].upper() for res in ocr_output if res[2] > 0.2])
-            if text.strip():
-                plates_found.append(text)
-
-    result_text = ", ".join(plates_found) if plates_found else "NOT DETECTED"
-    return jsonify({"plate": result_text})
+            if text.strip(): plates_found.append(text)
+    return jsonify({"plate": ", ".join(plates_found) if plates_found else "NOT DETECTED"})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=5000)
