@@ -13,7 +13,7 @@ ocr_reader = easyocr.Reader(['en'], gpu=False)
 
 video_source = None
 current_frame = None
-show_boxes = False # Bounding box is OFF by default
+show_boxes = False 
 
 def generate_frames():
     global current_frame, video_source, show_boxes
@@ -24,7 +24,6 @@ def generate_frames():
         current_frame = frame.copy()
         display_frame = frame.copy()
 
-        # Green bounding box logic: ONLY runs if toggle is enabled
         if show_boxes:
             results = model_plate(display_frame, verbose=False, conf=0.3)[0]
             for box in results.boxes:
@@ -66,16 +65,18 @@ def read_plate():
     global current_frame
     if current_frame is None: return jsonify({"plate": "No media"})
     results = model_plate(current_frame, verbose=False, conf=0.3)[0]
-    plates_found = []
+    
     for box in results.boxes:
         if "car" in model_plate.names[int(box.cls)].lower(): continue
         x1, y1, x2, y2 = map(int, box.xyxy[0])
         plate_roi = current_frame[y1:y2, x1:x2]
         if plate_roi.size > 0:
-            ocr_output = ocr_reader.readtext(cv2.cvtColor(plate_roi, cv2.COLOR_BGR2GRAY))
-            text = " ".join([res[1].upper() for res in ocr_output if res[2] > 0.2])
-            if text.strip(): plates_found.append(text)
-    return jsonify({"plate": ", ".join(plates_found) if plates_found else "NOT DETECTED"})
+            ocr_res = ocr_reader.readtext(plate_roi)
+            text = " ".join([res[1] for res in ocr_res])
+            return jsonify({"plate": text if text else "Not clear"})
+    
+    return jsonify({"plate": "No plate detected"})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    # Hugging Face Spaces အတွက် port 7860 ကို သုံးရပါမယ်
+    app.run(host='0.0.0.0', port=7860)
