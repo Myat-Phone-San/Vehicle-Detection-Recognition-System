@@ -2,20 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Plate Recognition System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <header>
-        <h1>LICENSE PLATE RECOGNITION SYSTEM</h1>
-    </header>
-
+    <header><h1>LICENSE PLATE RECOGNITION SYSTEM</h1></header>
     <main class="container">
         <div class="video-section">
             <img id="video-stream" src="" alt="Upload media to start monitoring">
         </div>
-
         <aside class="sidebar">
             <div class="control-panel">
                 <h3>System Controls</h3>
@@ -24,14 +19,12 @@
                 <button id="detect-btn" class="btn btn-green">🟢 DETECT BOUNDING BOX</button>
                 <button id="read-btn" class="btn btn-purple">🔍 READ OCR</button>
             </div>
-
             <div class="log-panel">
                 <h3>Recognition Log</h3>
                 <div id="ocr-log">Waiting for input...</div>
             </div>
         </aside>
     </main>
-
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
