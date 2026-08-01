@@ -1,76 +1,301 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
-    background-color: #0a0a0a;
-    color: white;
-    font-family: 'Arial', sans-serif;
+    background-color: #0b0e14;
+    color: #e6edf3;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 header {
-    background-color: #1a237e;
-    padding: 20px;
-    text-align: center;
+    background-color: #161b22;
+    padding: 10px 20px;
+    border-bottom: 1px solid #30363d;
 }
 
-.container {
+.header-container {
     display: flex;
-    padding: 20px;
-    gap: 20px;
-    height: 80vh;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1500px;
+    margin: 0 auto;
+    width: 100%;
 }
 
+header h1 {
+    margin: 0;
+    font-size: 1.1rem;
+    letter-spacing: 0.5px;
+    color: #58a6ff;
+    font-weight: 700;
+}
+
+.main-layout {
+    display: flex;
+    flex: 1;
+    padding: 15px;
+    gap: 15px;
+    max-width: 1500px;
+    margin: 0 auto;
+    width: 100%;
+    align-items: flex-start;
+}
+
+/* UI Balance: Adjusted Video Screen Size (ဘယ်ဘက်ပုံအရွယ်အစားကို သင့်တင့်အောင် ချိန်ညှိထားသည်) */
 .video-section {
-    flex: 2;
-    background: black;
-    border: 1px solid #333;
+    flex: 1.2;
+    background: #010409;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    max-height: 580px;
+    min-height: 420px;
+}
+
+.video-wrapper {
+    width: 100%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 #video-stream {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
 }
 
 .sidebar {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
+    min-width: 380px;
+}
+
+.control-panel {
+    background: #161b22;
+    border: 1px solid #30363d;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.button-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
 }
 
 .btn {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 4px;
+    padding: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 600;
     color: white;
-    transition: all 0.2s ease;
+    font-size: 0.78rem;
+    text-align: center;
+    transition: background 0.2s;
 }
 
-.btn-blue { background-color: #0d47a1; }
-.btn-purple { background-color: #6a1b9a; }
-.btn-green { background-color: #2e7d32; }
+.btn-blue { background: #1f6feb; }
+.btn-blue:hover { background: #388bfd; }
+.btn-teal { background: #008080; }
+.btn-teal:hover { background: #00a3a3; }
+.btn-green { background: #238636; }
+.btn-green:hover { background: #2ea043; }
+.btn-purple { background: #8957e5; }
+.btn-purple:hover { background: #a371f7; }
+.btn-red { background: #da3633; }
+.btn-red:hover { background: #f85149; }
+.btn-clear { background: #30363d; font-size: 0.75rem; padding: 6px 12px; }
 
-/* Visual feedback for detection status */
-.btn-active {
-    box-shadow: 0 0 15px #00ff00;
-    border: 2px solid #ffffff;
+/* 1. CROPPED IMAGE DISPLAY (TOP) */
+.crop-preview-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.log-panel {
-    background: #121212;
-    padding: 15px;
-    flex-grow: 1;
-    border: 1px solid #00e676;
+.img-crop-holder {
+    background: #0d1117;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid #21262d;
 }
 
-#ocr-log {
-    color: #00ff00;
-    font-family: 'Consolas', monospace;
-    white-space: pre-wrap;
+#cropped-plate-img {
+    max-height: 70px;
+    object-fit: contain;
+    border: 2px solid #238636;
+    border-radius: 4px;
+}
+
+/* 2. SCAN RESULT CARD */
+.ocr-result-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 8px 10px;
+    text-align: center;
+}
+
+.card-label {
+    display: block;
+    font-size: 0.7rem;
+    color: #8b949e;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+}
+
+.ocr-plate-display {
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #8b949e;
+    background: #0d1117;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #30363d;
+    letter-spacing: 2px;
+}
+
+.ocr-plate-display.active-plate {
+    color: #39d353;
+    border-color: #238636;
+    text-shadow: 0 0 10px rgba(57, 211, 83, 0.3);
+}
+
+/* 3. DATABASE VERIFICATION GRID */
+.info-display-panel {
+    background: #161b22;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    min-height: 120px;
+}
+
+.placeholder-text {
+    color: #8b949e;
+    font-size: 0.82rem;
+    text-align: center;
+    margin: auto;
+}
+
+.status-badge {
+    padding: 6px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.status-badge.valid {
+    background: rgba(46, 160, 67, 0.2);
+    color: #39d353;
+    border: 1px solid #238636;
+}
+
+.status-badge.invalid {
+    background: rgba(248, 81, 73, 0.2);
+    color: #f85149;
+    border: 1px solid #da3633;
+}
+
+.db-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.grid-item {
+    background: #0d1117;
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #30363d;
+    display: flex;
+    flex-direction: column;
+}
+
+.item-label {
+    font-size: 0.65rem;
+    color: #8b949e;
+    text-transform: uppercase;
+}
+
+.item-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #58a6ff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* =========================================================
+   📱 RESPONSIVE DESIGN (TABLETS & MOBILE PHONES)
+   ========================================================= */
+
+@media screen and (max-width: 992px) {
+    .main-layout {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .sidebar {
+        min-width: 100%;
+    }
+
+    .video-section {
+        max-height: 350px;
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    header h1 {
+        font-size: 0.85rem;
+    }
+    
+    .btn-clear {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+
+    .button-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ocr-plate-display {
+        font-size: 1.3rem;
+    }
+
+    .db-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .video-section {
+        max-height: 250px;
+    }
 }
