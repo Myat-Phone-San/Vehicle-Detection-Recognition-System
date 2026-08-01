@@ -2,29 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AI Plate Recognition System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AUTOMATIC VEHICLE IDENTIFICATION SYSTEM (ANPR)</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <header><h1>LICENSE PLATE RECOGNITION SYSTEM</h1></header>
-    <main class="container">
-        <div class="video-section">
-            <img id="video-stream" src="" alt="Upload media to start monitoring">
+    <header>
+        <div class="header-container">
+            <h1>AUTOMATIC VEHICLE IDENTIFICATION SYSTEM (ANPR)</h1>
+            <button id="clear-btn" class="btn btn-clear">🧹 RESET / CLEAR SYSTEM</button>
         </div>
-        <aside class="sidebar">
-            <div class="control-panel">
-                <h3>System Controls</h3>
-                <input type="file" id="file-input" hidden>
-                <button onclick="document.getElementById('file-input').click()" class="btn btn-blue">📂 UPLOAD MEDIA</button>
-                <button id="detect-btn" class="btn btn-green">🟢 DETECT BOUNDING BOX</button>
-                <button id="read-btn" class="btn btn-purple">🔍 READ OCR</button>
+    </header>
+
+    <main class="main-layout">
+        <!-- Main Media Screen Viewport -->
+        <section class="video-section">
+            <div class="video-wrapper">
+                <img id="video-stream" src="" alt="System Standby. Open Camera or Upload File...">
             </div>
-            <div class="log-panel">
-                <h3>Recognition Log</h3>
-                <div id="ocr-log">Waiting for input...</div>
+        </section>
+
+        <!-- Sidebar Display Control Panels -->
+        <aside class="sidebar">
+            <!-- Action Buttons Grid -->
+            <div class="control-panel">
+                <input type="file" id="file-input" accept="image/*,video/*" hidden>
+                <div class="button-grid">
+                    <button id="cam-btn" class="btn btn-blue">📷 LIVE WEBCAM</button>
+                    <button onclick="document.getElementById('file-input').click()" class="btn btn-blue">📂 UPLOAD FILE</button>
+                    <button id="detect-btn" class="btn btn-green">⚪ BOX ACTIVE</button>
+                    <button id="crop-btn" class="btn btn-teal">✂️ CROP PLATE</button>
+                    <button id="read-btn" class="btn btn-purple">🔍 RUN OCR READ</button>
+                    <button id="verify-btn" class="btn btn-red">🛡️ CHECK DATABASE</button>
+                </div>
+            </div>
+
+            <!-- STEP 1: CROPPED IMAGE (FIRST / TOP) -->
+            <div id="crop-preview-box" class="crop-preview-card" style="display: none;">
+                <span class="card-label">PLATE ROI CROP</span>
+                <div class="img-crop-holder">
+                    <img id="cropped-plate-img" src="" alt="Cropped Plate ROI">
+                </div>
+            </div>
+
+            <!-- STEP 2: SCAN OCR RESULT DISPLAY (BELOW CROPPED IMAGE) -->
+            <div class="ocr-result-card">
+                <span class="card-label">DETECTED LICENSE PLATE</span>
+                <div id="ocr-log" class="ocr-plate-display">READY...</div>
+            </div>
+
+            <!-- STEP 3: DATABASE VERIFICATION DETAILS -->
+            <div id="info-display" class="info-display-panel">
+                <div class="placeholder-text">Run Database Check to display owner details...</div>
             </div>
         </aside>
     </main>
+
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
